@@ -78,6 +78,8 @@ model Match {
 
   gameScores   GameScore[]
 
+  matchPlayers MatchPlayer[]
+
   @@unique([tournamentId, round, matchNumber, stage])
   @@index([tournamentId, status])
 }

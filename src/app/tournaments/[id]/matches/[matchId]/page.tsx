@@ -14,17 +14,18 @@ interface Match {
   gameScores: { gameNumber: number; player1Score: number; player2Score: number }[];
 }
 
-export default function MatchScorePage({ params }: { params: { id: string; matchId: string } }) {
+export default function MatchScorePage() {
+  const params = useParams<{ id: string; matchId: string }>();
   const [match, setMatch] = useState<Match | null>(null);
   const [games, setGames] = useState<{ p1: string; p2: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`/api/tournaments/${params.id}/matches/${params.matchId}`)
+    fetch(`/api/tournaments/${params?.id}/matches/${params?.matchId}`)
       .then(r => r.json())
       .then(data => setMatch(data));
-  }, [params.id, params.matchId]);
+  }, [params?.id, params?.matchId]);
 
   function addGame() { setGames(prev => [...prev, { p1: "", p2: "" }]); }
   function updateGame(i: number, key: "p1" | "p2", val: string) {
@@ -43,12 +44,12 @@ export default function MatchScorePage({ params }: { params: { id: string; match
     if (parsed.some(g => isNaN(g.player1Score) || isNaN(g.player2Score))) { alert("Enter valid scores"); return; }
 
     setSubmitting(true);
-    await fetch(`/api/tournaments/${params.id}/matches/${params.matchId}/score`, {
+    await fetch(`/api/tournaments/${params?.id}/matches/${params?.matchId}/score`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ gameScores: parsed }),
     });
-    router.push(`/tournaments/${params.id}`);
+    router.push(`/tournaments/${params?.id}`);
   }
 
   if (!match) return <PageContainer><p>Loading match...</p></PageContainer>;

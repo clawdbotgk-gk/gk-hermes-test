@@ -9,13 +9,14 @@ interface Match {
   winnerScore: number | null; loserScore: number | null;
 }
 
-export default function PublicView({ params }: { params: { id: string } }) {
+export default function PublicView() {
+  const params = useParams<{ id: string }>();
   const [tournament, setTournament] = useState<any>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/tournaments/${params.id}`)
+    fetch(`/api/tournaments/${params?.id}`)
       .then(r => r.json())
       .then(data => {
         setTournament(data);
@@ -23,16 +24,16 @@ export default function PublicView({ params }: { params: { id: string } }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [params.id]);
+  }, [params?.id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      fetch(`/api/tournaments/${params.id}`)
+      fetch(`/api/tournaments/${params?.id}`)
         .then(r => r.json())
         .then(data => { if (data.matches) setMatches(data.matches); });
     }, 5000);
     return () => clearInterval(interval);
-  }, [params.id]);
+  }, [params?.id]);
 
   if (loading || !tournament) return <div className="p-8 text-center">Loading...</div>;
 

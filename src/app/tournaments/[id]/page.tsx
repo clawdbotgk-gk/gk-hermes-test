@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { generateDraw } from "@/lib/draws";
 
 interface Player { id: string; name: string; email?: string; seed?: number; }
 interface Match {
@@ -24,17 +24,20 @@ interface Tournament {
   players: Player[]; matches: Match[];
 }
 
-export default function TournamentDetailPage({ params }: { params: { id: string } }) {
+export default function TournamentDetailPage() {
+  const params = useParams<{ id: string }>();
+  const tournamentId = params?.id;
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
   const [playerName, setPlayerName] = useState("");
 
   useEffect(() => {
-    fetch(`/api/tournaments/${params.id}`)
+    if (!tournamentId) return;
+    fetch(`/api/tournaments/${tournamentId}`)
       .then(r => r.json())
       .then(data => { setTournament(data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [params.id]);
+  }, [tournamentId]);
 
   async function addPlayer() {
     if (!playerName.trim() || !tournament) return;
@@ -52,9 +55,8 @@ export default function TournamentDetailPage({ params }: { params: { id: string 
     await fetch(`/api/tournaments/${tournament.id}/draw`, { method: "POST" });
     refreshTournament();
   }
-
   async function refreshTournament() {
-    const data = await fetch(`/api/tournaments/${params.id}`).then(r => r.json());
+    const data = await fetch(`/api/tournaments/${tournamentId}`).then(r => r.json());
     setTournament(data);
   }
 
@@ -69,7 +71,7 @@ export default function TournamentDetailPage({ params }: { params: { id: string 
         <Badge variant="secondary" className="text-sm">{tournament.status}</Badge>
         <Badge variant="outline" className="text-sm">{tournament.type}</Badge>
         <span className="text-sm text-muted-foreground">{tournament.players.length} players</span>
-        <Link href={`/tournaments/${params.id}/public`}>
+        <Link href={`/tournaments/${tournamentId}/public`}>
           <Button variant="outline" size="sm">Public View</Button>
         </Link>
       </div>
@@ -125,7 +127,7 @@ export default function TournamentDetailPage({ params }: { params: { id: string 
                             </div>
                           )}
                           {match.player1 && match.player2 && match.status !== "completed" && (
-                            <Link href={`/tournaments/${params.id}/matches/${match.id}`} className="block mt-2">
+                            <Link href={`/tournaments/${tournamentId}/matches/${match.id}`} className="block mt-2">
                               <Button size="sm" className="w-full" variant="outline">Enter Score</Button>
                             </Link>
                           )}

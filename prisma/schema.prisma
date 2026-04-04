@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Tournament {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        String
+  status      String   @default("draft")
+  startDate   DateTime?
+  endDate     DateTime?
+  maxPlayers  Int?
+  ownerId     String?
+  owner       User?    @relation("UserTournaments", fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  players     Player[]
+  matches     Match[]
+  groups      Group[]
+}
+
+model Player {
+  id           String      @id @default(cuid())
+  name         String
+  email        String?
+  phone        String?
+  seed         Int?
+  tournamentId String
+  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  group        Group?      @relation(fields: [groupId], references: [id])
+  groupId      String?
+  createdAt    DateTime    @default(now())
+
+  matches      MatchPlayer[]
+
+  @@index([tournamentId])
+}
+
+model Group {
+  id           String   @id @default(cuid())
+  name         String
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  players      Player[]
+
+  @@unique([tournamentId, name])
+}
+
+model Match {
+  id           String   @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  round        Int
+  matchNumber  Int
+  stage        String   @default("main")
+
+  player1      MatchPlayer? @relation("MatchPlayer1Match", fields: [player1Id], references: [id], onDelete: SetNull)
+  player2      MatchPlayer? @relation("MatchPlayer2Match", fields: [player2Id], references: [id], onDelete: SetNull)
+  player1Id    String?
+  player2Id    String?
+  
+  winnerId     String?
+  winnerScore  Int?
+  loserScore   Int?
+  bestOf       Int      @default(5)
+  
+  table        String?
+  scheduledAt  DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  status       String   @default("pending")
+
+  gameScores   GameScore[]
+
+  @@unique([tournamentId, round, matchNumber, stage])
+  @@index([tournamentId, status])
+}
+
+model MatchPlayer {
+  id        String  @id @default(cuid())
+  matchId   String
+  match     Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  playerId  String
+  player    Player  @relation(fields: [playerId], references: [id])
+
+  position  Int
+  isWinner  Boolean @default(false)
+
+  player1Matches Match[] @relation("MatchPlayer1Match")
+  player2Matches Match[] @relation("MatchPlayer2Match")
+
+  @@unique([matchId, position])
+  @@index([matchId])
+  @@index([playerId])
+}
+
+model GameScore {
+  id        String @id @default(cuid())
+  matchId   String
+  match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  gameNumber Int
+  player1Score Int
+  player2Score Int
+
+  @@unique([matchId, gameNumber])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  tournaments   Tournament[] @relation("UserTournaments")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

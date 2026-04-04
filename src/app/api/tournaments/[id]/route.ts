@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       players: { orderBy: { seed: "asc" } },
       matches: {
@@ -21,8 +22,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   return NextResponse.json(tournament);
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const body = await request.json();
-  const tournament = await prisma.tournament.update({ where: { id: params.id }, data: body });
+  const { id } = await params;
+  const tournament = await prisma.tournament.update({ where: { id }, data: body });
   return NextResponse.json(tournament);
 }

@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateDraw } from "@/lib/draws";
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const tournament = await prisma.tournament.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { players: { orderBy: { seed: "asc" } } },
   });
 
@@ -18,7 +19,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   })));
 
   await prisma.$transaction(async (tx) => {
-    await tx.match.deleteMany({ where: { tournamentId: params.id } });
+    await tx.match.deleteMany({ where: { tournamentId: id } });
 
     for (const m of draw.matches) {
       const matchData: any = {

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(request: Request, { params }: { params: { id: string; matchId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string; matchId: string }> }) {
+  const { id } = await params;
   const body = await request.json();
   const { gameScores } = body;
 

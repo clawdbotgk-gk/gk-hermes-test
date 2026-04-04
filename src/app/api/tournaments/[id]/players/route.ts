@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const players = await prisma.player.findMany({
-    where: { tournamentId: params.id },
+    where: { tournamentId: id },
     orderBy: { seed: "asc" },
   });
   return NextResponse.json(players);
 }
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const body = await request.json();
   
   // Check if single player or bulk
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   return NextResponse.json(player);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { searchParams } = new URL(request.url);
   const playerId = searchParams.get("playerId");
   if (!playerId) return NextResponse.json({ error: "playerId required" }, { status: 400 });

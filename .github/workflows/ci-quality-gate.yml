@@ -1,0 +1,52 @@
+name: CI Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    name: Install, Lint, Build, Smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Provide empty DATABASE_URL so Prisma client can be generated without a real DB
+          DATABASE_URL: "file:./dev.db"
+          AUTH_SECRET: "ci-quality-gate-secret-for-build"
+
+      - name: Smoke test
+        run: |
+          # Verify the build output exists and is valid
+          echo "=== Checking build output ==="
+          if [ ! -d ".next/standalone" ] && [ ! -d ".next/server" ]; then
+            echo "FAIL: Next.js build output not found"
+            exit 1
+          fi
+          echo "=== Checking package.json scripts ==="
+          node -e "
+            const pkg = require('./package.json');
+            const required = ['build', 'lint'];
+            const missing = required.filter(s => !pkg.scripts[s]);
+            if (missing.length) { console.error('Missing scripts:', missing.join(', ')); process.exit(1); }
+          "
+          echo "Smoke test passed"

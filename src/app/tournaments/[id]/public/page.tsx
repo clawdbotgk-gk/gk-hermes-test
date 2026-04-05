@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 interface Match {
   id: string; round: number; matchNumber: number; stage: string; status: string;
@@ -9,9 +10,17 @@ interface Match {
   winnerScore: number | null; loserScore: number | null;
 }
 
+interface Tournament {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  matches?: Match[];
+}
+
 export default function PublicView() {
   const params = useParams<{ id: string }>();
-  const [tournament, setTournament] = useState<any>(null);
+  const [tournament, setTournament] = useState<Tournament | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -28,7 +28,9 @@ function StatCard({ label, value, subtext }: { label: string; value: string | nu
 }
 
 export default function AnalyticsPage() {
-  const { data: session, status } = useSession();
+  const sessionData = useSession();
+  const session = sessionData?.data;
+  const status = sessionData?.status || "loading";
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [period, setPeriod] = useState("30d");
   const [loading, setLoading] = useState(true);

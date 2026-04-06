@@ -19,7 +19,8 @@ const FAQS = [
 ];
 
 export default function SupportPage() {
-  const { data: session } = useSession();
+  const sessionData = useSession();
+  const session = sessionData?.data;
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [subject, setSubject] = useState("");

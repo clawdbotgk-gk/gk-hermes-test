@@ -21,7 +21,9 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const sessionData = useSession();
+  const session = sessionData?.data;
+  const status = sessionData?.status || "loading";
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editing, setEditing] = useState(false);
   const [skillLevel, setSkillLevel] = useState("");

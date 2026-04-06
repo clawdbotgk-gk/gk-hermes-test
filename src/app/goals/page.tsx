@@ -21,7 +21,9 @@ interface Goal {
 }
 
 export default function GoalsPage() {
-  const { data: session, status } = useSession();
+  const sessionData = useSession();
+  const session = sessionData?.data;
+  const status = sessionData?.status || "loading";
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);

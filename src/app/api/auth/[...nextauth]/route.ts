@@ -78,4 +78,6 @@ const handler = NextAuth({
   },
 });
 
-export { handler as GET, handler as POST };
+// Type-safe export for Next.js 16 route handler compatibility
+export const GET = handler as unknown as (req: Request) => Promise<Response>;
+export const POST = handler as unknown as (req: Request) => Promise<Response>;

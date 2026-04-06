@@ -1,0 +1,20 @@
+TT Manager is the ultimate table tennis tournament management app. Built by players, for players and coaches.
+
+Create professional tournaments in seconds with four tournament formats:
+
+- Knockout: Single elimination brackets
+- Round Robin: Every player faces every player
+- Double Knockout: Winners and losers brackets
+- Groups + Knockout: Stage tournaments with group play followed by elimination
+
+Live Score Tracking -- Submit scores game-by-game from any device, right from the table.
+
+Key Features:
+- Instant tournament setup
+- Automatic bracket generation
+- Real-time score updates
+- Player management
+- Match history tracking
+- Export results
+
+Whether you're running a local club meetup or a regional tournament, TT Manager handles it all.

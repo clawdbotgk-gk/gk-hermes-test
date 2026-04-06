@@ -1,0 +1,50 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build and archive for App Store"
+  lane :build do
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      export_method: "app-store",
+      silent: true,
+      clean: true
+    )
+  end
+
+  desc "Upload to TestFlight"
+  lane :testflight do
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      export_method: "app-store",
+      silent: true
+    )
+    upload_to_testflight(skip_waiting: true)
+  end
+
+  desc "Release to App Store"
+  lane :release do
+    build_app(
+      workspace: "App.xcworkspace",
+      scheme: "App",
+      export_method: "app-store",
+      silent: true
+    )
+    upload_to_app_store(
+      skip_metadata: false,
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: false
+    )
+  end
+  
+  desc "Beta build for internal testers"
+  lane :beta do
+    build_app(
+      workspace: "App.xcworkspace", 
+      scheme: "App",
+      export_method: "development"
+    )
+  end
+end

@@ -1,0 +1,3 @@
+Table Tennis Tournament Manager
+
+Create, manage, and run table tennis tournaments with knockout, round-robin, double elimination, and group stage formats. Build and manage brackets, track live scores, and share results -- all from your phone.

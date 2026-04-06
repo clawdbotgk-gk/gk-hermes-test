@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TT Manager</string>
+    <string name="title_activity_main">TT Manager</string>
+    <string name="package_name">com.ormeaattc.ttmanager</string>
+    <string name="custom_url_scheme">com.ormeaattc.ttmanager</string>
+</resources>

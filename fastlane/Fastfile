@@ -1,0 +1,39 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build release APK/AAB"
+  lane :build do
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      project_dir: "android/"
+    )
+  end
+
+  desc "Upload to Play Store Internal Testing"
+  lane :internal do
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      project_dir: "android/"
+    )
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../android/app/build/outputs/bundle/release/app-release.aab'
+    )
+  end
+
+  desc "Upload to Play Store Production"
+  lane :release do
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      project_dir: "android/"
+    )
+    upload_to_play_store(
+      track: 'production',
+      release_status: 'draft',
+      aab: '../android/app/build/outputs/bundle/release/app-release.aab'
+    )
+  end
+end

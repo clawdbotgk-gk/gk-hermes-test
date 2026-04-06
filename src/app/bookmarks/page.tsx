@@ -33,7 +33,8 @@ function formatDuration(seconds: number | null): string {
 }
 
 export default function BookmarksPage() {
-  const { status } = useSession();
+  const session = useSession();
+  const status = session?.status || "loading";
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();

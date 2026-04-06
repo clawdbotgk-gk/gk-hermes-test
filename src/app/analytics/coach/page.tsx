@@ -22,7 +22,8 @@ interface StudentProgress {
 }
 
 export default function CoachAnalyticsPage() {
-  const { status } = useSession();
+  const session = useSession();
+  const status = session?.status || "loading";
   const [students, setStudents] = useState<StudentProgress[]>([]);
   const [loading, setLoading] = useState(true);
 

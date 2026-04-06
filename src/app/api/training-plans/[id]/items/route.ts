@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest,
+export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest,
 
   const { id } = await params;
   const plan = await prisma.trainingPlan.findUnique({ where: { id } });
-  if (!plan || plan.userId !== (session.user as any).id) {
+  if (!plan || plan.userId !== token.sub) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -47,7 +47,7 @@ export async function GET(
 
   const { id } = await params;
   const plan = await prisma.trainingPlan.findFirst({
-    where: { id, userId: (session.user as any).id },
+    where: { id, userId: token.sub },
     include: {
       items: {
         include: { video: { select: { id: true, title: true, duration: true } } },

@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { PageContainer } from "@/components/layout/page-container";
@@ -8,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 interface Bookmark {
   id: string;
   videoId: string;

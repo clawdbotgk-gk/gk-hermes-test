@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { PageContainer } from "@/components/layout/page-container";

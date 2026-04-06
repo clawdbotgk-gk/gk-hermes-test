@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { auth } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -8,7 +8,7 @@ export async function PATCH(
   request: NextRequest,
   _ctx: { params: Promise<{ itemId: string }> }
 ) {
-  const session = await getServerSession();
+  const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -38,7 +38,7 @@ export async function DELETE(
   _req: NextRequest,
   _ctx: { params: Promise<{ itemId: string }> }
 ) {
-  const session = await getServerSession();
+  const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -78,7 +78,6 @@ model Match {
   status       String   @default("pending")
 
   gameScores   GameScore[]
-
   matchPlayers MatchPlayer[]
 
   @@unique([tournamentId, round, matchNumber, stage])
@@ -153,6 +152,10 @@ model User {
   tournaments   Tournament[] @relation("UserTournaments")
   bookmarks     VideoBookmark[]
   trainingPlans TrainingPlan[]
+  watchHistory  VideoWatchHistory[]
+  goals         Goal[]
+  milestones    Milestone[]
+  feedbacks     Feedback[]
 }
 
 model VerificationToken {
@@ -177,8 +180,10 @@ model Video {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  tags       VideoTag[]
-  bookmarks  VideoBookmark[]
+  tags          VideoTag[]
+  bookmarks     VideoBookmark[]
+  trainingItems TrainingPlanItem[] @relation("TrainingPlanItemVideo")
+  watchHistory  VideoWatchHistory[] @relation("VideoWatchHistoryVideo")
 
   @@index([published, skillLevel])
   @@index([published, category])
@@ -187,7 +192,7 @@ model Video {
 
 model VideoTag {
   id     String  @id @default(cuid())
-  name   String  @unique @db.VarChar(50)
+  name   String  @unique
   videos Video[]
 }
 
@@ -230,7 +235,7 @@ model TrainingPlanItem {
   createdAt    DateTime @default(now())
 
   plan   TrainingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
-  video  Video?       @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  video  Video?       @relation("TrainingPlanItemVideo", fields: [videoId], references: [id], onDelete: SetNull)
 
   @@index([planId, sortOrder])
 }
@@ -240,10 +245,10 @@ model VideoWatchHistory {
   userId      String
   videoId     String
   watchedAt   DateTime @default(now())
-  durationSec Int?     // How many seconds watched
+  durationSec Int?
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation("VideoWatchHistoryVideo", fields: [videoId], references: [id], onDelete: Cascade)
 
   @@index([userId, watchedAt(sort: Desc)])
   @@index([videoId])
@@ -255,13 +260,13 @@ model Goal {
   userId      String
   title       String
   description String?
-  target      String?          // e.g. "Watch 20 coaching videos this month"
+  target      String?
   deadline    DateTime?
   completed   Boolean  @default(false)
   completedAt DateTime?
   createdAt   DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, completed, createdAt(sort: Desc)])
   @@index([userId, deadline])
@@ -273,10 +278,10 @@ model Milestone {
   title       String
   description String?
   achievedAt  DateTime @default(now())
-  type        String   // e.g. "first_video", "first_plan_completed", "10_hours"
-  metadata    String?  // JSON
+  type        String
+  metadata    String?
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, achievedAt(sort: Desc)])
   @@index([type])
@@ -288,13 +293,13 @@ model Feedback {
   email     String?
   subject   String
   message   String?
-  type      String   @default("general")  // "general", "bug", "feature", "support"
-  status    String   @default("new")       // "new", "in_progress", "resolved"
+  type      String   @default("general")
+  status    String   @default("new")
   response  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([status, createdAt(sort: Desc)])
   @@index([userId])

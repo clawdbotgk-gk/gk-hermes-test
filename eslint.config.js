@@ -13,14 +13,11 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
-      // Allow `any` type - phase 2 dev, we'll refine types iteratively
       "@typescript-eslint/no-explicit-any": "warn",
-      // Allow setState in effects - standard pattern for data fetching
       "react-hooks/set-state-in-effect": "warn",
-      // Allow unescaped apostrophes in JSX text
       "react/no-unescaped-entities": "warn",
-      // Allow unused vars (common during rapid dev)
       "@typescript-eslint/no-unused-vars": "warn",
+      "@next/next/no-html-link-for-pages": "warn",
     },
   },
 ]);

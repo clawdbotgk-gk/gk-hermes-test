@@ -15,6 +15,12 @@ export function Header() {
           <Link href="/tournaments">
             <Button variant="ghost" size="sm">Tournaments</Button>
           </Link>
+          <Link href="/videos">
+            <Button variant="ghost" size="sm">Coaching Videos</Button>
+          </Link>
+          <Link href="/support">
+            <Button variant="ghost" size="sm">Support</Button>
+          </Link>
           <Link href="/new">
             <Button size="sm">New Tournament</Button>
           </Link>

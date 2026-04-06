@@ -146,10 +146,13 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
+  password      String?
   image         String?
   accounts      Account[]
   sessions      Session[]
   tournaments   Tournament[] @relation("UserTournaments")
+  bookmarks     VideoBookmark[]
+  trainingPlans TrainingPlan[]
 }
 
 model VerificationToken {
@@ -158,4 +161,141 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Video {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  category     String
+  skillLevel   String
+  duration     Int?
+  storagePath  String
+  thumbnailUrl String?
+  published    Boolean  @default(false)
+  coachId      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tags       VideoTag[]
+  bookmarks  VideoBookmark[]
+
+  @@index([published, skillLevel])
+  @@index([published, category])
+  @@index([published, createdAt(sort: Desc)])
+}
+
+model VideoTag {
+  id     String  @id @default(cuid())
+  name   String  @unique @db.VarChar(50)
+  videos Video[]
+}
+
+model VideoBookmark {
+  id           String   @id @default(cuid())
+  userId       String
+  videoId      String
+  bookmarkedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+  @@index([userId, bookmarkedAt(sort: Desc)])
+  @@index([videoId])
+}
+
+model TrainingPlan {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  TrainingPlanItem[]
+
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model TrainingPlanItem {
+  id           String   @id @default(cuid())
+  planId       String
+  videoId      String?
+  title        String
+  description  String?
+  sortOrder    Int      @default(0)
+  completedAt  DateTime?
+  createdAt    DateTime @default(now())
+
+  plan   TrainingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  video  Video?       @relation(fields: [videoId], references: [id], onDelete: SetNull)
+
+  @@index([planId, sortOrder])
+}
+
+model VideoWatchHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  videoId     String
+  watchedAt   DateTime @default(now())
+  durationSec Int?     // How many seconds watched
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([userId, watchedAt(sort: Desc)])
+  @@index([videoId])
+  @@index([userId, videoId])
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  target      String?          // e.g. "Watch 20 coaching videos this month"
+  deadline    DateTime?
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, completed, createdAt(sort: Desc)])
+  @@index([userId, deadline])
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  achievedAt  DateTime @default(now())
+  type        String   // e.g. "first_video", "first_plan_completed", "10_hours"
+  metadata    String?  // JSON
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, achievedAt(sort: Desc)])
+  @@index([type])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String?
+  subject   String
+  message   String?
+  type      String   @default("general")  // "general", "bug", "feature", "support"
+  status    String   @default("new")       // "new", "in_progress", "resolved"
+  response  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([userId])
 }

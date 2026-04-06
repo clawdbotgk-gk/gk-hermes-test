@@ -1,5 +1,4 @@
 import { StatusBar } from '@capacitor/status-bar';
-import { SplashScreen } from '@capacitor/splash-screen';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Preferences } from '@capacitor/preferences';
 import { Keyboard } from '@capacitor/keyboard';
@@ -8,7 +7,7 @@ import { Capacitor } from '@capacitor/core';
 
 // Push notification setup
 export async function initPushNotifications(
-  onNotification?: (data: any) => void,
+  onNotification?: (data: Record<string, unknown>) => void,
   onRegistration?: (token: string) => void,
   onError?: (error: Error) => void
 ) {

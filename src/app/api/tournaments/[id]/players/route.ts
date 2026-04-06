@@ -66,7 +66,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   return NextResponse.json(player);
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest) {
   // Security: Verify authentication before deleting
   const auth = await verifyAuth(request);
   if (!auth.authenticated) {

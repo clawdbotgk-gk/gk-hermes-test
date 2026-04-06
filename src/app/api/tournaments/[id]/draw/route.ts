@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateDraw } from "@/lib/draws";
-import { drawGenerateSchema, validateRequest } from "@/lib/validation";
+
 import { verifyAuth } from "@/lib/auth";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {

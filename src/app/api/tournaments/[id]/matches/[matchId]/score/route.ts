@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { scoreUpdateSchema, validateRequest } from "@/lib/validation";
 import { verifyAuth } from "@/lib/auth";

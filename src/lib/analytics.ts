@@ -2,7 +2,7 @@
 // Initialize with your Firebase project config
 
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAnalytics, logEvent, setUserProperties, setUserId } from 'firebase/analytics';
+import { getAnalytics, logEvent, setUserId } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',

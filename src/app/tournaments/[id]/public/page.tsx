@@ -103,6 +103,6 @@ export default function PublicView() {
   );
 }
 
-function Badge({ children, variant }: { children: React.ReactNode; variant?: string }) {
+function Badge({ children }: { children: React.ReactNode }) {
   return <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100">{children}</span>;
 }

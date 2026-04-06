@@ -62,18 +62,18 @@ export async function validateRequest(request: Request, schema: z.ZodSchema) {
           JSON.stringify({ error: `Validation failed: ${firstError || "Invalid input"}` }),
           { status: 400, headers: { "Content-Type": "application/json" } }
         ),
-        data: null as any,
+        data: null,
       };
     }
     return { error: false, response: null, data: result.data };
-  } catch (e) {
+  } catch {
     return {
       error: true,
       response: new Response(
         JSON.stringify({ error: "Invalid JSON in request body" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       ),
-      data: null as any,
+      data: null,
     };
   }
 }
